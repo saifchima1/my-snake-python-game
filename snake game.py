@@ -116,7 +116,7 @@ try: #we use try so if the player press contro + c the game stops
             frame.append(line) #we add every line in the frame
         print('\033[H'+"\n".join(frame),end="") # we print the frame
         begin = None #now we disable the begin since the first iteration is done
-        time -= 0.005 # every frame the speed gets faster ike the old nokia games
         task.sleep(time) #it waits the times value befor rendering the next frame
 except KeyboardInterrupt:
+
     print("quiting") #just print after u press control + c
