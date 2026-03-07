@@ -3,7 +3,7 @@ import numpy as np #numpy to modify the map
 import keyboard as kb #get keyboard input without inturupting the game
 import time as task #time to make the script pose later
 from threading import Thread #threading
-from random import randint #you know random
+import random #you know random
 
 class Events:
     def gameover(tail,wall):
@@ -95,27 +95,10 @@ class snake: #blue print of the snake
         for pos_y,pos_x in self.movehistory: #for every cordination of the tail we put 1 on the map
             self.map[pos_y,pos_x] = 1
         if self.locationX == 0 or self.locationX == x or self.locationY == 0 or self.locationY == y:
-            return True ,self.map,[self.locationY,self.locationX]
+            return True ,self.map
         key = self.past_key
-        return False,self.map,[self.locationY,self.locationX] #we return the value of the final map
+        return False,np.array(self.map) #we return the value of the final map
 
-class Food:
-    def __init__(self,termap): #getting the main data here
-        self.map = np.array(termap)
-        self.mapsize = self.map.shape
-        self.y = self.mapsize[0]
-        self.x = self.mapsize[1]
-        self.locationY = randint(0,self.y-1)
-        self.locationX = randint(0,self.x-1)
-        self.points = 0
-    def fruit(self,head):
-        self.map[self.locationY,self.locationX] = 3
-        if head == [self.locationY,self.locationX]:
-            self.map[self.locationY,self.locationX] = 0
-            self.locationY = randint(0,self.y-1)
-            self.locationX = randint(0,self.x-1)
-            self.points += 1
-        return self.map, self.points
 
 key = None
 def userinput(): #a loop that we will thread to get the input wasd
@@ -134,15 +117,13 @@ termap = np.array([[0], #we put 1 x and 1y
 termap = np.array(np.resize(termap,(y,x))) #we change each dimension size by the x and y of the terminal size so we get the terminal map or "termap"
 
 snake1 = snake(termap) #we put the snake data once
-food = Food(termap)
-time = 0.25 #the freshrate
+time = 0.1 #the freshrate
 points = 0 #beggining points dont work now but after we add fruits it should increase
 try: #we use try so if the player press contro + c the game stops
     while True:
         frame = [] #the frame that will get printed gets cleared after every ime so we avoid bugs
-        hit,snakemap,head=snake1.run(key,begin,points) #we runn the snake.run() method in every iteration
-        foodmap, points = food.fruit(head)
-        termap = snakemap + foodmap #the snake returns the map value and we change our termap to the snake map value i know its not pro move but it works ¯\_(ツ)_/¯
+        hit,snakemap=snake1.run(key,begin,points) #we runn the snake.run() method in every iteration
+        termap = snakemap #the snake returns the map value and we change our termap to the snake map value i know its not pro move but it works ¯\_(ツ)_/¯
         for row in range(y):
             line = "" #in every line we clear the line hehe
             for bit in range(x): #in every letter we cheke
@@ -160,7 +141,6 @@ try: #we use try so if the player press contro + c the game stops
         if hit:
             print("game over")
             break
-        finaltime = max(0.001,time - (points/100))
-        task.sleep(finaltime) #it waits the times value befor rendering the next frame
+        task.sleep(time + (points/10)) #it waits the times value befor rendering the next frame
 except KeyboardInterrupt:
     print("quiting") #just print after u press control + c
